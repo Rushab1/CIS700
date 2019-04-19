@@ -40,7 +40,7 @@ def compare(descriptions, event):
 
 
 
-sentences = ["Jack kills Jill", "Ramu holds an umbrella"]
+# sentences = ["Jack kills Jill", "Ramu holds an umbrella"]
 
-embed()
+# embed()
 
