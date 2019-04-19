@@ -26,12 +26,10 @@ def get_verbs(sentences):
     return sentence_verb_pairs
 
 def compare(descriptions, event):
-    descriptions_dict = get_verbs(descriptions)
-    event_dict = get_verbs([event])[0]
     overlap += 1
-    for description in descriptions_dict:
+    for description in descriptions:
         for verb in description['verb']:
-            if(verb in event_dict['verb']):
+            if(verb in event['verb']):
                 overlap += 1
                 break
 
