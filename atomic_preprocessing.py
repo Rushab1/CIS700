@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
+# In[1]:
 
 
 from nltk.tokenize import word_tokenize, sent_tokenize
+from visual_genome import api as vg
 import multiprocessing as mp
+# from utils import *
 import pandas as pd
 import numpy as np
-from visual_genome import api as vg
+import pickle
 import requests
 import csv
 import spacy
@@ -18,10 +20,18 @@ import sys
 import os
 
 
-# In[4]:
+# In[2]:
 
 
-df = pd.read_csv('v4_atomic_all_agg.csv')
+def load_atomic_df():
+    df = pd.read_csv('v4_atomic_all_agg.csv')
+    return df
+
+def create_df_dict_by_events(df):
+    df_dct = {}
+    for index, row in df.iterrows():
+        df_dct[row["event"]] = row
+    return df_dct
 
 
 # Observations:
@@ -30,7 +40,7 @@ df = pd.read_csv('v4_atomic_all_agg.csv')
 #       - All events
 # 
 
-# In[4]:
+# In[3]:
 
 
 #relevant small functions
@@ -48,12 +58,13 @@ def get(verb):
         if verb in row["event"]:
             output.append(row)
     return output
+# get("umbrella")
 
 
-# In[5]:
+# In[4]:
 
 
-#Extract relations from json
+#Extract relations from json for VISUAL GENOME
 def get_relation_from_relation_dict(relation):
     relation_str = ""
     
@@ -112,6 +123,7 @@ def create_relations_dict(df, images_per_json_file = 1000, clear_previous_dicts 
         if cnt % images_per_json_file == 0:
             sys.stdout.write("Completed extracting relations from " + str(cnt) + " images\r")
             sys.stdout.flush()
+            
             json.dump(relations_dct, open("./modelfiles/relations_dct/" + str(cnt/images_per_json_file) + ".json" , "w"))
             
             for image_id in relations_dct.keys():
@@ -124,28 +136,29 @@ def create_relations_dict(df, images_per_json_file = 1000, clear_previous_dicts 
         for r in relation["relationships"]:
             relation_list.append(get_relation_from_relation_dict(r))
         
-        relations_dct[relation["image_id"]] = relation_list
+        relations_dct[relation["image_id"]] = {}
+        relations_dct[relation["image_id"]]["relations"] = relation_list
+        vg.get_QA_of_image(id=61512)
+        a=vg.get_QA_of_image(id=int(relation["image_id"]))
+#         relations_dct[relation["image_id"]]["qa"] = 
         
     json.dump(image_id_vs_file_map, open("./modelfiles/data_maps/relations_id_vs_file_map.json", "w"))
 
-
-# In[ ]:
-
-
-
+a = create_relations_dict(df, 1000, clear_previous_dicts=True)
+print(a)
 
 
 # In[ ]:
+
+
+
+
+
+# In[5]:
 
 
 ###########Overlap between relations from VG and events from ATOMIC###########
 THRESHOLD = 0.8
-
-def create_df_dict_by_events(df):
-    df_dct = {}
-    for index, row in df.iterrows():
-        df_dct[row["event"]] = row
-    return df_dct
 
 def get_image_ids_by_overlap_relations_vs_events_singleFile(df_dct, relations_json_file, saveFile):
     file = open(relations_json_file)
@@ -208,12 +221,61 @@ def get_image_ids_by_overlap_relations_vs_events(df, dir = "./modelfiles/relatio
     pool.close()
     pool.join()
         
+# get_image_ids_by_overlap_relations_vs_events(df)
+
+
+# In[ ]:
+
+
+exec(open("utils.py").read())
+from tqdm.auto import tqdm
+###########FLICKR30k Images###########
+def get_image_description_dct():
+    img_decriptions = np.genfromtxt("./Data/flickr30k_images/results.csv", delimiter="| ", dtype="|S80", skip_header=1)
+    descriptions_dct = {}
+    
+    for line in img_decriptions:
+        image_id = line[0]
+        
+        try:
+            descriptions_dct[image_id]
+        except:
+            descriptions_dct[image_id] = []
+            
+        descriptions_dct[image_id].append(line[2])
+        
+    return descriptions_dct
+
+
+def get_overlap():
+    df = load_atomic_df()
+    df_dct = create_df_dict_by_events(df)
+    image_descriptions = get_image_description_dct()
+    overlap_dct = {}
+    
+    event_pos = {}
+    image_descriptions_pos = {}
+    
+    for event in tqdm(df_dct.keys()):
+        event_pos[event] = get_verbs([event])[0]
+    
+    for image_id in tqdm(image_descriptions):
+        image_descriptions_pos[image_id] = get_verbs(image_descriptions[image_id])
+    
+    for event in tqdm(df_dct.keys()):
+        for image_id in image_descriptions:
+            overlap = compare(image_descriptions_pos[image_id], event_pos[event])
+            overlap_dct[(event, image_id)] = overlap
+    
+    pickle.dump(overlap_dct, open("over_image_event.pkl", "w"))
+    
+get_overlap()
 
 
 # In[16]:
 
-if __name__ == "__main__":
-    # get("umbrella")
-    #create_relations_dict(df, 1000, clear_previous_dicts=True)
-    get_image_ids_by_overlap_relations_vs_events(df)
+
+from visual_genome import api
+image = vg.get_image_data(id=23)
+print ( image)
 
