@@ -31,7 +31,7 @@ def compare(descriptions, event):
     overlap += 1
     for description in descriptions_dict:
         for verb in description['verb']:
-            if(verb in event_dict['verb'])
+            if(verb in event_dict['verb']):
                 overlap += 1
                 break
 
