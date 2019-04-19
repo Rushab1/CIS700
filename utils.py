@@ -13,7 +13,7 @@ def get_verbs(sentences):
         verbs = []
         nouns = []
         others = []
-        pos_tags = nltk.pos_tag(word_tokenize(sentence.replace('PersonX', 'he')))
+        pos_tags = nltk.pos_tag(word_tokenize(sentence.encode('utf-8').replace('PersonX', 'he')))
         for token, tag in pos_tags:
             if('VB' in tag and lemmatizer.lemmatize(token, pos='v') != 'be'):
                 verbs.append(lemmatizer.lemmatize(token, pos='v'))
