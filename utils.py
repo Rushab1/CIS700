@@ -17,7 +17,7 @@ def get_verbs(sentences):
         for token, tag in pos_tags:
             if('VB' in tag and lemmatizer.lemmatize(token, pos='v') != 'be'):
                 verbs.append(lemmatizer.lemmatize(token, pos='v'))
-            elif('NN' in tag):
+            elif('NN' in tag or 'PRP' in tag):
                 nouns.append(token)
             else:
                 others.append(token)
