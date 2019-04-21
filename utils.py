@@ -28,12 +28,22 @@ def get_verbs(sentences):
 def compare(descriptions, event):
     overlap = 0
     for description in descriptions:
-        for verb in description['verb']:
-            if(verb in event['verb']):
+        for verb in description['verbs']:
+            if(verb in event['verbs']):
                 overlap += 1
                 break
 
-    return overlap/len(descriptions)
+    return 1.0*overlap/len(descriptions)
+
+def compare(descriptions, event):
+    overlap = 0
+    for description in descriptions:
+        for verb in description['nouns']:
+            if(verb in event['nouns']):
+                overlap += 1
+                break
+
+    return 1.0*overlap / len(descriptions)
 
 
 
