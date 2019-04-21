@@ -26,7 +26,7 @@ def get_verbs(sentences):
     return sentence_verb_pairs
 
 def compare(descriptions, event):
-    overlap += 1
+    overlap = 0
     for description in descriptions:
         for verb in description['verb']:
             if(verb in event['verb']):
