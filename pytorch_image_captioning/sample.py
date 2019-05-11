@@ -57,7 +57,7 @@ class Model:
         
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
-        sampled_ids = self.decoder.sample(feature)
+        sampled_ids = self.decoder.sample(feature)[0]
         # print(image_tensor.shape, sampled_ids.shape)
         sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
 
@@ -88,10 +88,9 @@ class Model:
         
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
-        sampled_ids_list = self.decoder.sample(feature)
+        sampled_ids_list, lstm_outputs = self.decoder.sample(feature)
 
         captions = []       
-        lstm_outputs = sampled_ids_list
         eos_pos = []
         
         for sampled_ids in sampled_ids_list:
@@ -147,7 +146,7 @@ if __name__ == '__main__':
     image_dir = args.image_dir
     image_list = os.listdir(image_dir)
     n = len(image_list)
-    h = 30 #batch_Size
+    h = 2 #batch_Size
 
     
     features_dict = {}
