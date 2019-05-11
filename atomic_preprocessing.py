@@ -8,12 +8,14 @@ from nltk.tokenize import word_tokenize, sent_tokenize
 from visual_genome import api as vg
 import multiprocessing as mp
 # from utils import *
+exec(open("utils.py").read())
+from tqdm.auto import tqdm
 import pandas as pd
 import numpy as np
 import pickle
 import requests
 import csv
-import spacy
+# import spacy
 import json
 import ijson
 import sys
@@ -144,8 +146,8 @@ def create_relations_dict(df, images_per_json_file = 1000, clear_previous_dicts 
         
     json.dump(image_id_vs_file_map, open("./modelfiles/data_maps/relations_id_vs_file_map.json", "w"))
 
-a = create_relations_dict(df, 1000, clear_previous_dicts=True)
-print(a)
+# a = create_relations_dict(df, 1000, clear_previous_dicts=True)
+# print(a)
 
 
 # In[ ]:
@@ -227,8 +229,6 @@ def get_image_ids_by_overlap_relations_vs_events(df, dir = "./modelfiles/relatio
 # In[ ]:
 
 
-exec(open("utils.py").read())
-from tqdm.auto import tqdm
 ###########FLICKR30k Images###########
 def get_image_description_dct():
     img_decriptions = np.genfromtxt("./Data/flickr30k_images/results.csv", delimiter="| ", dtype="|S80", skip_header=1)
@@ -269,13 +269,13 @@ def get_overlap():
     
     pickle.dump(overlap_dct, open("over_image_event.pkl", "w"))
     
-get_overlap()
 
 
 # In[16]:
 
 
-from visual_genome import api
-image = vg.get_image_data(id=23)
-print ( image)
-
+if __name__ == "__main__":
+    from visual_genome import api
+    image = vg.get_image_data(id=23)
+    print ( image)
+    get_overlap()

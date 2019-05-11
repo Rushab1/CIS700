@@ -40,31 +40,31 @@ def parallel_extraction_of_flickr_featres(image_directory, savefile):
     image_files = os.listdir(image_directory)
 
     n = len(image_files)
-    h = 500
+    h = 10
 
     jobs = []
-    writer_job = pool.apply_async(writer, (extractor, JobQueue))
+    # writer_job = pool.apply_async(writer, (extractor, JobQueue))
 
-    for i in range(0, int(n/h)):
-        s = i * h
-        e = min((i+1)*h, n)
+    # for i in range(0, int(n/h)):
+        # s = i * h
+        # e = min((i+1)*h, n)
 
-        files_subset = image_files[s:e]
-        job = pool.apply_async(extractor_reader, (image_directory, files_subset, extractor, JobQueue))
-        jobs.append(job)
+        # files_subset = image_files[s:e]
+        # job = pool.apply_async(extractor_reader, (image_directory, files_subset, extractor, JobQueue))
+        # jobs.append(job)
 
-        extractor_reader(image_directory, files_subset, extractor, [])
+        # extractor_reader(image_directory, files_subset, extractor, [])
 
-    print(jobs)
-    for job in jobs:
-        job.get()
+    # print(jobs)
+    # for job in jobs:
+        # job.get()
 
-    JobQueue.put("kill")
-    writer.get()
-    pool.close()
-    pool.join()
+    # JobQueue.put("kill")
+    # writer.get()
+    # pool.close()
+    # pool.join()
 
-    # extractor_reader(image_directory, image_files, extractor, [])
+    extractor_reader(image_directory, image_files, extractor, [])
     pickle.dump(extractor.features_dict, open(savefile, "wb"))
 
 if __name__ == "__main__":
