@@ -146,7 +146,7 @@ if __name__ == '__main__':
     image_dir = args.image_dir
     image_list = os.listdir(image_dir)
     n = len(image_list)
-    h = 50 #batch_Size
+    h = 10 #batch_Size
 
     
     features_dict = {}
