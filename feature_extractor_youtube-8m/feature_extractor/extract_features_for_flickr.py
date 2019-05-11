@@ -40,7 +40,7 @@ def parallel_extraction_of_flickr_featres(image_directory, savefile):
     image_files = os.listdir(image_directory)
 
     n = len(image_files)
-    h = 10
+    h = 500
 
     jobs = []
     writer_job = pool.apply_async(writer, (extractor, JobQueue))
