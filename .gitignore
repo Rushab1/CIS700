@@ -3,3 +3,4 @@ virtual_env/*
 TMP/
 feature_extractor_youtube-8m/feature_extractor/modelfiles/*
 feature_extractor_youtube-8m/feature_extractor/venv/*
+pytorch_image_captioning/modelfiles/
