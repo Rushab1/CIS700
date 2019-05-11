@@ -1,3 +1,5 @@
 Data/*
 virtual_env/*
 TMP/
+youtube-8m/feature_extractor/modelfiles/*
+youtube-8m/feature_extractor/venv/*
