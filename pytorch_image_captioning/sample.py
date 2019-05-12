@@ -93,6 +93,12 @@ class Model:
 
         image_tensor = torch.stack(images, 0)
         
+        try:
+            image_tensor = image_tensor.cuda()
+        except Exception as e:
+            print(e)
+            pass
+        
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
         sampled_ids_list, lstm_outputs = self.decoder.sample(feature)
