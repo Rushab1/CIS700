@@ -53,7 +53,14 @@ class Model:
     def generate_caption(self, image_file):
         # Prepare an image
         image = self.load_image(image_file, self.transform)
+        print(device)
         image_tensor = image.to(device)
+        
+        try:
+            image_tensor = image_tensor.cuda()
+        except Exception as e:
+            print(e)
+            pass
         
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
