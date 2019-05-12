@@ -10,7 +10,6 @@ from model import EncoderCNN, DecoderRNN
 from PIL import Image
 from tqdm import tqdm
 
-
 # Device configuration
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -128,6 +127,16 @@ class Model:
             # print (sentence)
             # image = Image.open(args.image)
             # plt.imshow(np.asarray(image))
+        
+        for i in range(0, len(lstm_outputs)):
+            lstm_local = []
+            n = eos_pos[i]
+
+            lstm_local.append(lstm_outputs[i][0])
+            lstm_local.append(lstm_outputs[i][n/2])
+            lstm_local.append(lstm_outputs[i][n-1])
+
+            lstm_outputs[i] = lstm_local
 
         return feature, captions, lstm_outputs, eos_pos
 
@@ -160,7 +169,6 @@ if __name__ == '__main__':
     image_list = os.listdir(image_dir)
     n = len(image_list)
     h = 10 #batch_Size
-
     
     features_dict = {}
     output_file_indexes = {}
