@@ -54,9 +54,10 @@ class DecoderRNN(nn.Module):
             sampled_ids.append(predicted)
             inputs = self.embed(predicted)                       # inputs: (batch_size, embed_size)
             inputs = inputs.unsqueeze(1)                         # inputs: (batch_size, 1, embed_size)
-            lstm_outputs.append(outputs)
+            # print(states[0])
+            lstm_outputs.append(states)
         
-        lstm_outputs = torch.stack(lstm_outputs, 1)
+        # lstm_outputs = torch.stack(lstm_outputs, 1)
 
         sampled_ids = torch.stack(sampled_ids, 1)                # sampled_ids: (batch_size, max_seq_length)
         return sampled_ids, lstm_outputs

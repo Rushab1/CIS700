@@ -52,7 +52,7 @@ class Model:
     def generate_caption(self, image_file):
         # Prepare an image
         image = self.load_image(image_file, self.transform)
-        print(device)
+        # print(device)
         image_tensor = image.to(device)
         
         try:
@@ -92,11 +92,8 @@ class Model:
 
         image_tensor = torch.stack(images, 0)
         
-        try:
+        if torch.cuda.is_available():
             image_tensor = image_tensor.cuda()
-        except Exception as e:
-            print(e)
-            pass
         
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
@@ -105,6 +102,7 @@ class Model:
         captions = []       
         eos_pos = []
         
+        # print(len(lstm_outputs))
         for sampled_ids in sampled_ids_list:
             sampled_ids = sampled_ids.cpu().numpy()
             # Convert word_ids to words
@@ -128,17 +126,20 @@ class Model:
             # image = Image.open(args.image)
             # plt.imshow(np.asarray(image))
         
-        for i in range(0, len(lstm_outputs)):
+        lstm_outputs_new = []
+
+        for i in range(0, len(image_files)):
             lstm_local = []
             n = eos_pos[i]
 
-            lstm_local.append(lstm_outputs[i][0])
-            lstm_local.append(lstm_outputs[i][n/2])
-            lstm_local.append(lstm_outputs[i][n-1])
+            lstm_local.append(lstm_outputs[0][0][0][i])
+            lstm_local.append(lstm_outputs[int(n/2)][0][0][i])
+            lstm_local.append(lstm_outputs[n-1][0][0][i])
 
-            lstm_outputs[i] = lstm_local
+            # print(lstm_local[0].shape)
+            lstm_outputs_new.append(lstm_local)
 
-        return feature, captions, lstm_outputs, eos_pos
+        return feature, captions, lstm_outputs_new, eos_pos
 
        
 if __name__ == '__main__':
