@@ -97,7 +97,7 @@ class Model:
         
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
-        sampled_ids_list, lstm_outputs = self.decoder.sample(feature)
+        sampled_ids_list = self.decoder.sample(feature)
 
         captions = []       
         eos_pos = []
@@ -126,21 +126,7 @@ class Model:
             # image = Image.open(args.image)
             # plt.imshow(np.asarray(image))
         
-        lstm_outputs_new = []
-
-        for i in range(0, len(image_files)):
-            lstm_local = []
-            n = eos_pos[i]
-
-            lstm_local.append(lstm_outputs[0][0][0][i])
-            lstm_local.append(lstm_outputs[int(n/2)][0][0][i])
-            lstm_local.append(lstm_outputs[n-1][0][0][i])
-
-            # print(lstm_local[0].shape)
-            lstm_outputs_new.append(lstm_local)
-
-        return feature, captions, lstm_outputs_new, eos_pos
-
+        return feature, captions, eos_pos
        
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -181,13 +167,12 @@ if __name__ == '__main__':
         s = i * h
         e = min( (i+1)*h, n )
 
-        features, captions, lstm_outputs, eos_pos = model.generate_caption_list(image_dir, image_list[s:e])
+        features, captions, eos_pos = model.generate_caption_list(image_dir, image_list[s:e])
         
         for j in range(s,e):
             fname = image_list[j]
             features_dict[fname] = {}
             features_dict[fname]['features'] = features[j-s]
-            features_dict[fname]['lstm_outputs'] = lstm_outputs[j-s]
             features_dict[fname]['captions'] = captions[j-s]
             features_dict[fname]['eos_pos'] = eos_pos[j-s]
 
