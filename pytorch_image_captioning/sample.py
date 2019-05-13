@@ -182,7 +182,7 @@ if __name__ == '__main__':
         cnt += h
         if cnt % images_per_file == 0:
             pickle.dump(features_dict, open(args.save_dir + "features_captioning_" + str(file_cnt) + ".pkl", "wb"))
-            pickle.dump(output_file_indexes, open("image_file_map.pkl", "wb"))
+            pickle.dump(output_file_indexes, open(args.save_dir + "image_file_map.pkl", "wb"))
             file_cnt += 1
 
 
