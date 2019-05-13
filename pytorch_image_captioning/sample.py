@@ -133,6 +133,7 @@ if __name__ == '__main__':
     parser.add_argument('--image', type=str, help='input image for generating caption')
     parser.add_argument('--image_dir', type=str, help='input image directory for generating caption')
     parser.add_argument('--save_dir', type=str, help='output directory for generating caption', default='../Data/features_captioning/')
+    parser.add_argument('--dataset_type', type=str, help='output directory for generating caption', default='Coco')
 
     parser.add_argument('--encoder_path', type=str, default='./modelfiles/encoder-5-3000.pkl', help='path for trained encoder')
     parser.add_argument('--decoder_path', type=str, default='modelfiles/decoder-5-3000.pkl', help='path for trained decoder')
