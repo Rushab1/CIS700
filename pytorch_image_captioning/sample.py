@@ -6,8 +6,8 @@ import argparse
 import pickle 
 import os
 from torchvision import transforms 
-from build_vocab import Vocabulary
-from model import EncoderCNN, DecoderRNN
+from captioning_build_vocab import Vocabulary
+from captioning_model import EncoderCNN, DecoderRNN
 from PIL import Image
 from tqdm import tqdm
 
@@ -19,6 +19,7 @@ class Model:
     decoder = None
     transform = None
     vocab = None
+
 
     def load_model(self, args):
         # Image preprocessing
@@ -41,12 +42,17 @@ class Model:
         self.encoder.load_state_dict(torch.load(args.encoder_path))
         self.decoder.load_state_dict(torch.load(args.decoder_path))
 
+        # set params to zero
+        for params in self.encoder.parameters():
+            params.requires_grad = False
+        for params in self.decoder.parameters():
+            params.requires_grad = False
+
     def load_image(self, image_path, transform=None):
         image = Image.open(image_path)
         image = image.resize([224, 224], Image.LANCZOS)
 
         if transform is not None:
-            embed()
             if(1 in np.array(image).shape):
                 embed()
             image = transform(image);
@@ -69,7 +75,6 @@ class Model:
         # Generate an caption from the image
         feature = self.encoder(image_tensor)
         sampled_ids = self.decoder.sample(feature)[0]
-        # print(image_tensor.shape, sampled_ids.shape)
         sampled_ids = sampled_ids[0].cpu().numpy()          # (1, max_seq_length) -> (max_seq_length)
 
         
@@ -84,8 +89,8 @@ class Model:
         
         # Print out the image and the generated caption
         # print (sentence)
-        image = Image.open(args.image)
-        plt.imshow(np.asarray(image))
+        #image = Image.open(args.image)
+        #plt.imshow(np.asarray(image))
 
     def generate_caption_list(self, prefix, image_files):
         # Prepare images
@@ -159,21 +164,37 @@ if __name__ == '__main__':
         os.mkdir(args.save_dir)
     
     image_dir = args.image_dir
+    image_dir = "/scratch/images_needed_coco/train/"
     image_list = os.listdir(image_dir)
+    image_list = [image_dir + i for i in image_list]
+
+    image_dir = "/scratch/images_needed_coco/valid/"
+    image_local = os.listdir(image_dir)
+    image_local = [image_dir + i for i in image_local]
+    image_list.extend(image_local)
+
+    image_dir = "/scratch/images_needed_flickr/"
+    image_local = os.listdir(image_dir)
+    image_local = [image_dir + i for i in image_local]
+    image_list.extend(image_local)
+
+    print(len(image_list))
+
     n = len(image_list)
-    h = 10 #batch_Size
+    h = 200 #batch_Size
     
     features_dict = {}
     output_file_indexes = {}
     cnt = 0
     file_cnt = 0
-    images_per_file = 10
+    images_per_file = 1000000#ignore this param
 
     for i in tqdm(range(0, int(1.0* n /h))):
         s = i * h
         e = min( (i+1)*h, n )
 
-        features, captions, eos_pos = model.generate_caption_list(image_dir, image_list[s:e])
+#        features, captions, eos_pos = model.generate_caption_list(image_dir, image_list[s:e])
+        features, captions, eos_pos = model.generate_caption_list("", image_list[s:e])
         
         for j in range(s,e):
             fname = image_list[j]
@@ -187,7 +208,7 @@ if __name__ == '__main__':
         cnt += h
         if cnt % images_per_file == 0:
             pickle.dump(features_dict, open(args.save_dir + "features_captioning_" + str(file_cnt) + ".pkl", "wb"))
-            pickle.dump(output_file_indexes, open(args.save_dir + "image_file_map.pkl", "wb"))
             file_cnt += 1
-
-
+            
+    pickle.dump(features_dict, open(args.save_dir + "features_captioning_" + str(file_cnt) + ".pkl", "wb"))
+    pickle.dump(output_file_indexes, open(args.save_dir + "image_file_map.pkl", "wb"))
