@@ -46,9 +46,11 @@ class Model:
         image = image.resize([224, 224], Image.LANCZOS)
 
         if transform is not None:
-            if(np.array(image) == (224,224,1)):
+            embed()
+            if(1 in np.array(image).shape):
                 embed()
-            image = transform(image).unsqueeze(0)
+            image = transform(image);
+            image= image.unsqueeze(0)
         
         return image
 
