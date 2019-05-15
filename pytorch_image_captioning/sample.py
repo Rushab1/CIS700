@@ -129,6 +129,9 @@ class Model:
             eos_pos.append(cnt)
             
             sentence = ' '.join(sampled_caption)
+            sentence = sentence.replace("<start>", "")
+            sentence = sentence.replace("<end>", "")
+            sentence = sentence.strip()
             
             # Print out the image and the generated caption
             captions.append(sentence)

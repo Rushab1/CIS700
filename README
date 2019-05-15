@@ -1,0 +1,9 @@
+COCO images: Data/image_needed_for_coco/train
+COCO images: Data/image_needed_for_coco/val
+FLICKR images: Data/image_needed_for_flickr
+
+cd feature_extractor_youtube-8m/feature_extractor
+run extract_features_for_flickr.py
+
+cd pytorch_image_captioning/ 
+run sample.py or run_extract_features.py_
